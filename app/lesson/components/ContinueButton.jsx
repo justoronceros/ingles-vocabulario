@@ -11,7 +11,7 @@ export const ContinueButton = ({ show, href }) =>{
           text-gray-100 text-lg uppercase font-bold tracking-wider
           transition-all duration-100
           ${
-            show
+            !show
               ? "bg-[#45AB4E]  active:translate-y-2 pointer-events-auto"
               : "bg-gray-50 text-transparent pointer-events-none"
           }

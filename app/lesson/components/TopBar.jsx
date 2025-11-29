@@ -8,7 +8,7 @@ export const TopBar = () => {
       {/* ---------BARRA PROGRESO---------- */}
       <div className="flex items-center w-full px-2">
         <div className="w-full h-[30%] bg-black/5 rounded-2xl overflow-hidden">
-          <div className="bg-yellow-300 h-full w-[15%] rounded-r-2xl transition-all duration-500">
+          <div className="bg-yellow-400 h-full w-[8%] rounded-r-2xl transition-all duration-500">
           </div>
         </div>
       </div>

@@ -10,7 +10,7 @@ export function LessonProvider({ children }) {
   const words = [
     {
       id: 1,
-      english: "",
+      english: "hello",
       spanish: "hola",
       image: "/1/hello.png",
       audio: "/1/hello.mp3",
