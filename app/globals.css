@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #141f23;
     --foreground: #ededed;
   }
 }
@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.jello-vertical {
+	        animation: jello-vertical 0.5s both;
+}
+
+@keyframes jello-vertical {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+  30% {
+    transform: scale3d(0.95, 1.05, 1); /* movimiento suave */
+  }
+  45% {
+    transform: scale3d(1.05, 0.95, 1); /* rebote leve */
+  }
+  60% {
+    transform: scale3d(0.98, 1.02, 1); /* pequeño ajuste */
+  }
+  80% {
+    transform: scale3d(1.02, 0.98, 1); /* rebote final */
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
