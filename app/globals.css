@@ -25,28 +25,85 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* JELLO VERTICAL SIMPLE (para el clic) */
 .jello-vertical {
-	        animation: jello-vertical 0.5s both;
+  animation: jello-vertical-simple 0.5s both;
 }
 
-@keyframes jello-vertical {
+@keyframes jello-vertical-simple {
   0% {
     transform: scale3d(1, 1, 1);
   }
   30% {
-    transform: scale3d(0.95, 1.05, 1); /* movimiento suave */
+    transform: scale3d(0.95, 1.05, 1);
   }
   45% {
-    transform: scale3d(1.05, 0.95, 1); /* rebote leve */
+    transform: scale3d(1.05, 0.95, 1);
   }
   60% {
-    transform: scale3d(0.98, 1.02, 1); /* pequeño ajuste */
+    transform: scale3d(0.98, 1.02, 1);
   }
   80% {
-    transform: scale3d(1.02, 0.98, 1); /* rebote final */
+    transform: scale3d(1.02, 0.98, 1);
   }
   100% {
     transform: scale3d(1, 1, 1);
   }
 }
 
+/* JELLO VERTICAL CON PAUSAS (para la imagen) */
+@keyframes jello-vertical-pausado {
+  0%, 17.86% {
+    transform: scale3d(1, 1, 1);
+  }
+  5.36% {
+    transform: scale3d(0.95, 1.05, 1);
+  }
+  8.93% {
+    transform: scale3d(1.05, 0.95, 1);
+  }
+  12.5% {
+    transform: scale3d(0.98, 1.02, 1);
+  }
+  15.07% {
+    transform: scale3d(1.02, 0.98, 1);
+  }
+  17.86%, 100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.animate-jello-pausado {
+  animation: jello-vertical-pausado 2.8s ease-in-out infinite;
+}
+
+/* WOBBLE (mantenemos por si acaso) */
+@keyframes wobble-hor-bottom {
+  0%, 100% {
+    transform: translateX(0%) rotate(0deg);
+    transform-origin: 50% 50%;
+  }
+  15% { transform: translateX(-30px) rotate(-6deg); }
+  30% { transform: translateX(15px) rotate(6deg); }
+  45% { transform: translateX(-15px) rotate(-3.6deg); }
+  60% { transform: translateX(9px) rotate(2.4deg); }
+  75% { transform: translateX(-6px) rotate(-1.2deg); }
+}
+
+.animate-wobble-with-pause {
+  animation: wobble-hor-bottom 0.8s ease-in-out infinite;
+}
+
+@keyframes wobble-cycle {
+  0%, 28.57% { transform: translateX(0%) rotate(0deg); }
+  5.36%    { transform: translateX(-30px) rotate(-6deg); }
+  10.71%   { transform: translateX(15px) rotate(6deg); }
+  16.07%   { transform: translateX(-15px) rotate(-3.6deg); }
+  21.43%   { transform: translateX(9px) rotate(2.4deg); }
+  26.79%   { transform: translateX(-6px) rotate(-1.2deg); }
+  28.57%, 100% { transform: translateX(0%) rotate(0deg); }
+}
+
+.animate-wobble-pausado {
+  animation: wobble-cycle 2.8s ease-in-out infinite;
+}
