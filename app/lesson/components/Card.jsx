@@ -15,7 +15,8 @@ export default function Card({ id, src, text, spanish, audio }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showShake, setShowShake] = useState(false);
   const [isImageRevealed, setIsImageRevealed] = useState(false);
-  const audioRef = useRef(null);
+  const imageAudioRef = useRef(null);
+  const textAudioRef = useRef(null);
 
   // Efecto para activar la animación de entrada
   useEffect(() => {
@@ -52,22 +53,43 @@ export default function Card({ id, src, text, spanish, audio }) {
   // Cargar el audio
   useEffect(() => {
     if (audio) {
-      audioRef.current = new Audio(audio);
-      audioRef.current.preload = "auto";
+      imageAudioRef.current = new Audio(audio);
+      textAudioRef.current = new Audio(audio);
+      imageAudioRef.current.preload = "auto";
+      textAudioRef.current.preload = "auto";
       return () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current = null;
-        }
+        imageAudioRef.current = null;
+        textAudioRef.current = null;
+        cardAudioRef.current = null;
       };
+      // return () => {
+      //   if (audioRef.current) {
+      //     audioRef.current.pause();
+      //     audioRef.current = null;
+      //   }
+      // };
     }
   }, [audio, id]);
 
-  function playAudio() {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(console.error);
-    }
+  // function playAudio() {
+  //   if (audioRef.current) {
+  //     audioRef.current.currentTime = 0;
+  //     audioRef.current.play().catch(console.error);
+  //   }
+  // }
+
+  function playImageAudio() {
+    const audio = imageAudioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(console.error);
+  }
+
+  function playTextAudio() {
+    const audio = textAudioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(console.error);
   }
 
   function handleImageClick() {
@@ -75,14 +97,14 @@ export default function Card({ id, src, text, spanish, audio }) {
     setIsImageRevealed(true);
     setClickedImage(true);
     setAnimationImageEnd(false);
-    playAudio();
+    playImageAudio();
   }
 
   function handleEnglishClick() {
     if (!animationTextEnd) return;
     setClickedText(true);
     setAnimationTextEnd(false);
-    playAudio();
+    playTextAudio();
   }
 
   function handleCardClic() {
