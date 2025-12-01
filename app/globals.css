@@ -113,28 +113,23 @@ body {
 }
 
 .animate-revealed {
-  animation: revealed 1s ease-in-out forwards;
+  animation: revealed 1.2s ease-in-out forwards;
 }
 @keyframes revealed {
   0% {
     transform: scale3d(1, 1, 1);
   }
-
-  /* Llega al tamaño grande */
-  20% {
+  15% {
     transform: scale3d(1.13, 1.13, 1);
   }
-
-  /* Se queda un ratito en grande (pausa visual) */
   80% {
     transform: scale3d(1.13, 1.13, 1);
   }
-
-  /* Regresa suave */
   100% {
     transform: scale3d(1, 1, 1);
   }
 }
+
 
 .animate-text-revealed {
   animation: text-revealed 1s ease-in-out forwards;

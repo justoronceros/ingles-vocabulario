@@ -60,7 +60,6 @@ export default function Card({ id, src, text, spanish, audio }) {
       return () => {
         imageAudioRef.current = null;
         textAudioRef.current = null;
-        cardAudioRef.current = null;
       };
       // return () => {
       //   if (audioRef.current) {
