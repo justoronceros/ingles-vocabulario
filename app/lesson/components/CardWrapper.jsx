@@ -15,7 +15,7 @@ export default function CardWrapper() {
           key={currentWord.id} // clave única para animación
           initial={{ opacity: 0, x: 100 }} // entra desde la derecha
           animate={{ opacity: 1, x: 0 }} // posición final
-          exit={{ opacity: 0, x: -100 }} // sale hacia la izquierda
+          exit={{ opacity: 0, scale: 0.9 }} // sale hacia la izquierda
           transition={{ duration: 0.2 }}
           className="absolute top-0 left-0 w-full h-full"
         >

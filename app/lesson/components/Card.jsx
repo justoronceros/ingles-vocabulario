@@ -145,8 +145,8 @@ export default function Card({
     <div
       className={`
         flex flex-col w-full h-full
-        transition-all duration-500
-        ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-24"}
+        // transition-all duration-10000 ease-in-out
+
       `}
     >
       <div
