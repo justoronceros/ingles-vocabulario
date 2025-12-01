@@ -1,148 +1,173 @@
 // app/lesson/components/Card.jsx
 import { useState, useRef, useEffect } from "react";
+import { useLesson } from "../context/LessonContext";
 
-export default function Card({ id, src, text, spanish, audio }) {
-  const [clickedCard, setClickedCard] = useState(false);
-
+export default function Card({
+  id,
+  src,
+  text,
+  spanish,
+  audio,
+  isExiting = false,
+}) {
+  // Estados de clics
   const [clickedImage, setClickedImage] = useState(false);
-  const [showJelloAnimation, setShowJelloAnimation] = useState(false);
-  const [animationImageEnd, setAnimationImageEnd] = useState(true);
-
   const [clickedText, setClickedText] = useState(false);
+
+  // Animaciones
+  const [showJelloAnimation, setShowJelloAnimation] = useState(false);
+  const [showShake, setShowShake] = useState(false);
+
+  // Estados de animación de la tarjeta
+  const [animationImageEnd, setAnimationImageEnd] = useState(true);
   const [animationTextEnd, setAnimationTextEnd] = useState(true);
 
-  const [animationEnd, setAnimationEnd] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [showShake, setShowShake] = useState(false);
   const [isImageRevealed, setIsImageRevealed] = useState(false);
+
+  // Entrada/salida de la tarjeta
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Nuevo estado para controlar la transición
+  const [isActive, setIsActive] = useState(true);
+
+  // Referencias de audio
   const imageAudioRef = useRef(null);
   const textAudioRef = useRef(null);
 
-  // Efecto para activar la animación de entrada
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-      console.log("✅ Animación de entrada activada");
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+  const { setLocalProgress, currentWord, setCanContinue } = useLesson();
 
-  // Efecto para activar jello después de 2 segundos
+  // 🔄 Reiniciar estados al cambiar de tarjeta SOLO cuando no está saliendo
   useEffect(() => {
-    if (isLoaded && !clickedImage) {
-      const timer = setTimeout(() => {
-        setShowJelloAnimation(true);
-      }, 2000);
+    if (!isExiting) {
+      // Resetear todos los estados de animación y clic
+      setClickedImage(false);
+      setClickedText(false);
+      setIsImageRevealed(false);
+      setAnimationImageEnd(true);
+      setAnimationTextEnd(true);
+      setShowJelloAnimation(false);
+      setShowShake(false);
+      setCanContinue(false);
+      setIsActive(true);
+
+      // Reiniciar animación de entrada
+      setIsLoaded(false);
+      const loadTimer = setTimeout(() => setIsLoaded(true), 50);
+      return () => clearTimeout(loadTimer);
+    }
+  }, [currentWord.id, isExiting]);
+
+  // 🎭 Jello si no hacen clic en imagen
+  useEffect(() => {
+    if (isLoaded && !clickedImage && isActive && !isExiting) {
+      const timer = setTimeout(() => setShowJelloAnimation(true), 2000);
       return () => clearTimeout(timer);
     }
     setShowJelloAnimation(false);
-  }, [isLoaded, clickedImage]);
+  }, [isLoaded, clickedImage, isActive, isExiting]);
 
-  // Activar shake después de 3 segundos
+  // 🎭 Shake si no hacen clic en texto
   useEffect(() => {
-    if (isLoaded && !clickedCard) {
-      const timer = setTimeout(() => {
-        setShowShake(true);
-      }, 3000);
+    if (isLoaded && !clickedText && isActive && !isExiting) {
+      const timer = setTimeout(() => setShowShake(true), 3000);
       return () => clearTimeout(timer);
-    } else {
-      setShowShake(false);
     }
-  }, [isLoaded, clickedCard]);
+    setShowShake(false);
+  }, [isLoaded, clickedText, isActive, isExiting]);
 
-  // Cargar el audio
+  // 🔊 Cargar audio (uno para imagen y otro para texto)
   useEffect(() => {
-    if (audio) {
+    if (audio && isActive) {
       imageAudioRef.current = new Audio(audio);
       textAudioRef.current = new Audio(audio);
+
       imageAudioRef.current.preload = "auto";
       textAudioRef.current.preload = "auto";
-      return () => {
-        imageAudioRef.current = null;
-        textAudioRef.current = null;
-      };
-      // return () => {
-      //   if (audioRef.current) {
-      //     audioRef.current.pause();
-      //     audioRef.current = null;
-      //   }
-      // };
     }
-  }, [audio, id]);
+    return () => {
+      if (imageAudioRef.current) {
+        imageAudioRef.current.pause();
+      }
+      if (textAudioRef.current) {
+        textAudioRef.current.pause();
+      }
+    };
+  }, [audio, id, isActive]);
 
-  // function playAudio() {
-  //   if (audioRef.current) {
-  //     audioRef.current.currentTime = 0;
-  //     audioRef.current.play().catch(console.error);
-  //   }
-  // }
+  // 📈 Actualizar progreso local
+  useEffect(() => {
+    if (isActive && !isExiting) {
+      if (clickedImage && clickedText) {
+        setLocalProgress(100);
+      } else {
+        setLocalProgress((clickedImage ? 50 : 0) + (clickedText ? 50 : 0));
+      }
+    }
+  }, [clickedImage, clickedText, setLocalProgress, isActive, isExiting]);
 
+  // ▶️ Reproducir audio imagen
   function playImageAudio() {
-    const audio = imageAudioRef.current;
-    if (!audio) return;
-    audio.currentTime = 0;
-    audio.play().catch(console.error);
+    if (!imageAudioRef.current || !isActive) return;
+    imageAudioRef.current.currentTime = 0;
+    imageAudioRef.current.play().catch(console.error);
   }
 
+  // ▶️ Reproducir audio texto
   function playTextAudio() {
-    const audio = textAudioRef.current;
-    if (!audio) return;
-    audio.currentTime = 0;
-    audio.play().catch(console.error);
+    if (!textAudioRef.current || !isActive) return;
+    textAudioRef.current.currentTime = 0;
+    textAudioRef.current.play().catch(console.error);
   }
 
+  // 🖼️ Click en imagen
   function handleImageClick() {
-    if (!animationImageEnd) return;
+    if (!animationImageEnd || !isActive || isExiting) return;
     setIsImageRevealed(true);
     setClickedImage(true);
     setAnimationImageEnd(false);
     playImageAudio();
   }
 
+  // 🔤 Click en texto
   function handleEnglishClick() {
-    if (!animationTextEnd) return;
+    if (!animationTextEnd || !isActive || isExiting) return;
     setClickedText(true);
     setAnimationTextEnd(false);
     playTextAudio();
   }
 
-  function handleCardClic() {
-    setClickedCard(true);
-    setAnimationEnd(false);
-    playAudio();
+  // Si está saliendo, deshabilitar interacciones pero mantener el estado visual
+  if (isExiting && !isActive) {
+    return null;
   }
 
   return (
     <div
       className={`
-      flex flex-col w-[88%] h-[90%]
-      transition-all duration-400 
-      ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-24"}
-    `}
+        flex flex-col w-full h-full
+        transition-all duration-500
+        ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-24"}
+      `}
     >
-      {/* ::::::::::::::: Card Container :::::::::::: */}
       <div
-        // onClick={handleCardClic}
-        onAnimationEnd={() => setAnimationEnd(true)}
         className={`
-          flex flex-col grow rounded-2xl border-2 border-b-3 overflow-hidden cursor-pointer transition duration-200 bg-cyan-200 border-cyan-400 w-full
-          ${clickedCard && !animationEnd ? "jello-vertical" : ""}
+          flex flex-col grow rounded-2xl border-2 border-b-3 overflow-hidden 
+          cursor-pointer bg-cyan-200 border-cyan-400 w-full
+          ${isExiting ? "pointer-events-none" : ""}
         `}
       >
-        {/* ------------ Spanish Text Container ------------ */}
-        {/* Spanish Text */}
+        {/* -------- Spanish -------- */}
         <div className="text-xl w-full italic h-[14%] flex justify-center items-end font-medium">
-          <p className="text-gray-500 min-w-[85%] text-center rounded-full bg-white/80 px-4 py-1">
+          <p className="text-gray-500 min-w-[85%] text-center rounded-full bg-white/90 px-4 py-1">
             {spanish}
           </p>
         </div>
 
-        {/* -------------- Image Container ------------ */}
-        {/* Image con animación jello */}
+        {/* -------- Image -------- */}
         <div
           onAnimationEnd={() => setAnimationImageEnd(true)}
           onClick={handleImageClick}
-          className="grow p-4 cursor-pointer"
+          className="grow p-6 cursor-pointer"
         >
           <img
             src={src}
@@ -150,12 +175,12 @@ export default function Card({ id, src, text, spanish, audio }) {
             className={`
               w-full h-full object-contain
               ${
-                isImageRevealed
-                  ? "opacity-100 brightness-100 grayscale-0 contrast-100 "
+                isImageRevealed || isExiting
+                  ? "opacity-100 brightness-100 grayscale-0 contrast-100"
                   : "brightness-0 grayscale contrast-50 opacity-50"
               }
               ${
-                showJelloAnimation && !isImageRevealed
+                showJelloAnimation && !isImageRevealed && !isExiting
                   ? "animate-jello-pausado"
                   : ""
               }
@@ -164,7 +189,7 @@ export default function Card({ id, src, text, spanish, audio }) {
           />
         </div>
 
-        {/* -------------- English Text ------------ */}
+        {/* -------- English text -------- */}
         <div
           onClick={handleEnglishClick}
           className="flex flex-col h-[19%] justify-center items-center text-3xl bg-white/90 rounded-lg p-2"
@@ -172,18 +197,31 @@ export default function Card({ id, src, text, spanish, audio }) {
           <div className="w-full h-[70%] flex justify-center items-center font-semibold relative">
             <div
               className={`
-    rounded-full min-w-[37%] h-[45%] absolute transition-opacity duration-300
-    ${clickedText ? "opacity-0" : "opacity-100 bg-black/50"}
-    ${showShake && !clickedText ? "animate-shake-pausado" : ""}
-  `}
+                rounded-full min-w-[37%] h-[45%] absolute transition-opacity duration-300
+                ${
+                  clickedText || isExiting
+                    ? "opacity-0"
+                    : "opacity-100 bg-black/40"
+                }
+                ${
+                  showShake && !clickedText && !isExiting
+                    ? "animate-shake-pausado"
+                    : ""
+                }
+              `}
             ></div>
+
             <p
               onAnimationEnd={() => setAnimationTextEnd(true)}
               className={`
-    text-cyan-600 text-center transition-opacity
-    ${clickedText ? "opacity-100" : "opacity-0"}
-    ${clickedText && !animationTextEnd ? "animate-text-revealed" : ""}
-  `}
+                text-cyan-600 text-center transition-opacity duration-300
+                ${clickedText || isExiting ? "opacity-100" : "opacity-0"}
+                ${
+                  clickedText && !animationTextEnd
+                    ? "animate-text-revealed"
+                    : ""
+                }
+              `}
             >
               {text}
             </p>

@@ -7,6 +7,14 @@ const LessonContext = createContext();
 export function LessonProvider({ children }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
+  // Se activa cuando una tarjeta fue revelada por completo
+  const [cardCompleted, setCardCompleted] = useState(false);
+
+  // Se activa cuando ya terminó de moverse la barra
+  const [canContinue, setCanContinue] = useState(false);
+
+  const [localProgress, setLocalProgress] = useState(0);
+
   const words = [
     {
       id: 1,
@@ -17,27 +25,68 @@ export function LessonProvider({ children }) {
     },
     {
       id: 2,
-      english: "goodbye",
+      english: "bye",
       spanish: "adiós",
-      image: "/2/goodbye.jpg",
-      audio: "/2/goodbye.mp3",
+      image: "/1/bye.png",
+      audio: "/1/bye.mp3",
     },
     {
       id: 3,
-      english: "thank you",
+      english: "thanks",
       spanish: "gracias",
-      image: "/3/thanks.jpg",
-      audio: "/3/thanks.mp3",
+      image: "/1/thanks.png",
+      audio: "/1/thanks.mp3",
+    },
+    {
+      id: 4,
+      english: "please",
+      spanish: "por favor",
+      image: "/1/please.png",
+      audio: "/1/please.mp3",
     },
   ];
 
+  const totalCards = words.length;
+
+  const nextCard = () => {
+    setCurrentCardIndex((prev) => {
+      if (prev < totalCards - 1) {
+        return prev + 1;
+      }
+      return prev;
+    });
+
+    // cuando cambia de tarjeta → bloquear continuar nuevamente
+    setCardCompleted(false);
+    setCanContinue(false);
+  };
+
+  const restartLesson = () => {
+    setCurrentCardIndex(0);
+    // setCardCompleted(false);
+    setCanContinue(false);
+  };
+
   const value = {
-    currentCardIndex,
-    setCurrentCardIndex,
     words,
     currentWord: words[currentCardIndex],
-    progress: ((currentCardIndex + 1) / words.length) * 100,
-    isLastCard: currentCardIndex === words.length - 1,
+
+    currentCardIndex,
+    totalCards,
+
+    // progreso total de TODAS las tarjetas
+    progress: (currentCardIndex / totalCards) * 100,
+
+    localProgress, // progreso real de la tarjeta
+    setLocalProgress,
+
+    canContinue,
+    setCanContinue,
+
+    nextCard,
+    restartLesson,
+
+    isLastCard: currentCardIndex === totalCards - 1,
   };
 
   return (

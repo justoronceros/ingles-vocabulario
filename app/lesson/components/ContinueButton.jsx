@@ -1,24 +1,36 @@
+// app/lesson/components/ContinueButton.jsx
 "use client";
-import Link from "next/link";
 
-export const ContinueButton = ({ show, href }) =>{
+import { useLesson } from "../context/LessonContext";
+
+export const ContinueButton = () => {
+  const { canContinue, nextCard, setCanContinue, setLocalProgress } =
+    useLesson();
+
+  const handleClick = () => {
+    if (!canContinue) return;
+
+    nextCard();
+
+    // reiniciar estados para la siguiente tarjeta
+    setCanContinue(false);
+    setLocalProgress(0);
+  };
+
   return (
-    <div className="h-full transition-all duration-300 flex items-center">
-      <Link
-        href={show ? href : "#"}
-        className={`
-          w-full h-full flex items-center justify-center
-          text-gray-100 text-lg uppercase font-bold tracking-wider
-          transition-all duration-100
-          ${
-            !show
-              ? "bg-[#45AB4E]  active:translate-y-2 pointer-events-auto"
-              : "bg-gray-50 text-transparent pointer-events-none"
-          }
-        `}
-      >
-        Continuar
-      </Link>
-    </div>
+    <button
+      onClick={handleClick}
+      className={`
+        w-full h-full flex items-center justify-center
+        text-gray-100 text-lg uppercase font-bold tracking-wider transition-all duration-100
+        ${
+          canContinue
+            ? "bg-green-600 active:translate-y-1"
+            : "bg-gray-400 opacity-50 pointer-events-none"
+        }
+      `}
+    >
+      Continuar
+    </button>
   );
-}
+};
