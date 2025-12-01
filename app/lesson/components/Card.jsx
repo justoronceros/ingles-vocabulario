@@ -3,10 +3,19 @@ import { useState, useRef, useEffect } from "react";
 
 export default function Card({ id, src, text, spanish, audio }) {
   const [clickedCard, setClickedCard] = useState(false);
+
+  const [clickedImage, setClickedImage] = useState(false);
+  const [showJelloAnimation, setShowJelloAnimation] = useState(false);
+  const [animationImageEnd, setAnimationImageEnd] = useState(true);
+
+  const [clickedText, setClickedText] = useState(false);
+  const [animationTextEnd, setAnimationTextEnd] = useState(true);
+
   const [animationEnd, setAnimationEnd] = useState(false);
-  const audioRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [showAnimation, setShowAnimation] = useState(false);
+  const [showShake, setShowShake] = useState(false);
+  const [isImageRevealed, setIsImageRevealed] = useState(false);
+  const audioRef = useRef(null);
 
   // Efecto para activar la animación de entrada
   useEffect(() => {
@@ -19,17 +28,24 @@ export default function Card({ id, src, text, spanish, audio }) {
 
   // Efecto para activar jello después de 2 segundos
   useEffect(() => {
-    if (isLoaded && !clickedCard) {
-      console.log("⏱️ Programando jello en 2 segundos...");
+    if (isLoaded && !clickedImage) {
       const timer = setTimeout(() => {
-        setShowAnimation(true);
-        console.log("🎯 Jello repetitivo ACTIVADO");
+        setShowJelloAnimation(true);
       }, 2000);
+      return () => clearTimeout(timer);
+    }
+    setShowJelloAnimation(false);
+  }, [isLoaded, clickedImage]);
 
+  // Activar shake después de 3 segundos
+  useEffect(() => {
+    if (isLoaded && !clickedCard) {
+      const timer = setTimeout(() => {
+        setShowShake(true);
+      }, 3000);
       return () => clearTimeout(timer);
     } else {
-      setShowAnimation(false);
-      console.log("🛑 Jello repetitivo DETENIDO");
+      setShowShake(false);
     }
   }, [isLoaded, clickedCard]);
 
@@ -54,8 +70,22 @@ export default function Card({ id, src, text, spanish, audio }) {
     }
   }
 
+  function handleImageClick() {
+    if (!animationImageEnd) return;
+    setIsImageRevealed(true);
+    setClickedImage(true);
+    setAnimationImageEnd(false);
+    playAudio();
+  }
+
+  function handleEnglishClick() {
+    if (!animationTextEnd) return;
+    setClickedText(true);
+    setAnimationTextEnd(false);
+    playAudio();
+  }
+
   function handleCardClic() {
-    console.log("👆 Card clickeada");
     setClickedCard(true);
     setAnimationEnd(false);
     playAudio();
@@ -71,7 +101,7 @@ export default function Card({ id, src, text, spanish, audio }) {
     >
       {/* ::::::::::::::: Card Container :::::::::::: */}
       <div
-        onClick={handleCardClic}
+        // onClick={handleCardClic}
         onAnimationEnd={() => setAnimationEnd(true)}
         className={`
           flex flex-col grow rounded-2xl border-2 border-b-3 overflow-hidden cursor-pointer transition duration-200 bg-cyan-200 border-cyan-400 w-full
@@ -81,39 +111,59 @@ export default function Card({ id, src, text, spanish, audio }) {
         {/* ------------ Spanish Text Container ------------ */}
         {/* Spanish Text */}
         <div className="text-xl w-full italic h-[14%] flex justify-center items-end font-medium">
-          <p className="text-gray-600 min-w-[85%] text-center rounded-full bg-black/5 px-4 py-1">
+          <p className="text-gray-500 min-w-[85%] text-center rounded-full bg-white/80 px-4 py-1">
             {spanish}
           </p>
         </div>
 
         {/* -------------- Image Container ------------ */}
         {/* Image con animación jello */}
-        <div className="grow p-4">
+        <div
+          onAnimationEnd={() => setAnimationImageEnd(true)}
+          onClick={handleImageClick}
+          className="grow p-4 cursor-pointer"
+        >
           <img
             src={src}
             alt={text}
             className={`
               w-full h-full object-contain
               ${
-                clickedCard
-                  ? ""
-                  : "brightness-0 grayscale contrast-75 opacity-50"
+                isImageRevealed
+                  ? "opacity-100 brightness-100 grayscale-0 contrast-100 "
+                  : "brightness-0 grayscale contrast-50 opacity-50"
               }
-              ${showAnimation && !clickedCard ? "animate-jello-pausado" : ""}
+              ${
+                showJelloAnimation && !isImageRevealed
+                  ? "animate-jello-pausado"
+                  : ""
+              }
+              ${clickedImage && !animationImageEnd ? "animate-revealed" : ""}
             `}
           />
         </div>
 
         {/* -------------- English Text ------------ */}
-        <div className="flex flex-col h-[19%] justify-center items-center text-3xl bg-white/90 rounded-lg p-2">
+        <div
+          onClick={handleEnglishClick}
+          className="flex flex-col h-[19%] justify-center items-center text-3xl bg-white/90 rounded-lg p-2"
+        >
           <div className="w-full h-[70%] flex justify-center items-center font-semibold relative">
             <div
               className={`
-              rounded-full min-w-[37%] h-[45%] absolute
-              ${clickedCard ? "hidden" : "bg-black/50"}
-            `}
+    rounded-full min-w-[37%] h-[45%] absolute transition-opacity duration-300
+    ${clickedText ? "opacity-0" : "opacity-100 bg-black/50"}
+    ${showShake && !clickedText ? "animate-shake-pausado" : ""}
+  `}
             ></div>
-            <p className={clickedCard ? "text-cyan-600 text-center" : "hidden"}>
+            <p
+              onAnimationEnd={() => setAnimationTextEnd(true)}
+              className={`
+    text-cyan-600 text-center transition-opacity
+    ${clickedText ? "opacity-100" : "opacity-0"}
+    ${clickedText && !animationTextEnd ? "animate-text-revealed" : ""}
+  `}
+            >
               {text}
             </p>
           </div>
