@@ -33,7 +33,7 @@ function LessonContent({ children }) {
   }
 
   return (
-    <div className="fade-in flex flex-col h-dvh gap-0 select-none overflow-hidden bg-gray-100">
+    <div className="fade-in flex flex-col h-dvh w-vw gap-0 select-none overflow-hidden bg-gray-100">
       <div className="h-[8%]">
         <TopBar />
       </div>
