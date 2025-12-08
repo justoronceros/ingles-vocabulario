@@ -1,97 +1,57 @@
-// context/LessonContext.jsx
+//* app/lesson/context/LessonContext.jsx
+
 "use client";
 import { createContext, useContext, useState } from "react";
 
 const LessonContext = createContext();
 
 export function LessonProvider({ children }) {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-
-  // Se activa cuando una tarjeta fue revelada por completo
-  const [cardCompleted, setCardCompleted] = useState(false);
-
-  // Se activa cuando ya terminó de moverse la barra
-  const [canContinue, setCanContinue] = useState(false);
-
-  const [localProgress, setLocalProgress] = useState(0);
-
-  const words = [
+  const wordsList = [
     {
-      id: 1,
-      english: "hello",
+      english: "1",
       spanish: "hola",
-      image: "/1/hello.png",
-      audio: "/1/hello.mp3",
+      audioSpanish: "/audio/hello-es.mp3",
+      audioEnglish: "/audio/hello-en.mp3",
+      image: "/images/hello.jpg",
     },
     {
-      id: 2,
-      english: "bye",
-      spanish: "adiós",
-      image: "/1/bye.png",
-      audio: "/1/bye.mp3",
+      english: "2",
+      spanish: "Mundo",
+      audioSpanish: "/audio/world-es.mp3",
+      audioEnglish: "/audio/world-en.mp3",
+      image: "/images/world.jpg",
     },
     {
-      id: 3,
-      english: "thanks",
-      spanish: "gracias",
-      image: "/1/thanks.png",
-      audio: "/1/thanks.mp3",
-    },
-    {
-      id: 4,
-      english: "please",
-      spanish: "por favor",
-      image: "/1/please.png",
-      audio: "/1/please.mp3",
+      english: "3",
+      spanish: "Bye",
+      audioSpanish: "/audio/world-es.mp3",
+      audioEnglish: "/audio/world-en.mp3",
+      image: "/images/world.jpg",
     },
   ];
 
-  const totalCards = words.length;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentWord = wordsList[currentIndex];
 
-  const nextCard = () => {
-    setCurrentCardIndex((prev) => {
-      if (prev < totalCards - 1) {
-        return prev + 1;
-      }
-      return prev;
-    });
-
-    // cuando cambia de tarjeta → bloquear continuar nuevamente
-    setCardCompleted(false);
-    setCanContinue(false);
+  // Función para avanzar al siguiente índice
+  const nextWord = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % wordsList.length);
   };
 
-  const restartLesson = () => {
-    setCurrentCardIndex(0);
-    // setCardCompleted(false);
-    setCanContinue(false);
+  // Función para retroceder al índice anterior
+  const prevWord = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? wordsList.length - 1 : prevIndex - 1
+    );
   };
 
-  const value = {
-    words,
-    currentWord: words[currentCardIndex],
-
-    currentCardIndex,
-    totalCards,
-
-    // progreso total de TODAS las tarjetas
-    progress: (currentCardIndex / totalCards) * 100,
-
-    localProgress, // progreso real de la tarjeta
-    setLocalProgress,
-
-    canContinue,
-    setCanContinue,
-
-    nextCard,
-    restartLesson,
-
-    isLastCard: currentCardIndex === totalCards - 1,
-  };
-
-  return (
-    <LessonContext.Provider value={value}>{children}</LessonContext.Provider>
-  );
+return (
+  <LessonContext.Provider
+    value={{ currentWord, nextWord, prevWord, wordsList }}
+  >
+    {children}
+  </LessonContext.Provider>
+);
 }
 
 export const useLesson = () => useContext(LessonContext);

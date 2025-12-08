@@ -1,4 +1,5 @@
-// app/lesson/components/Card.jsx
+//* app/lesson/components/Card.jsx
+
 import { useState, useRef, useEffect } from "react";
 import { useLesson } from "../context/LessonContext";
 
@@ -10,7 +11,7 @@ export default function Card({
   audio,
   isExiting = false,
 }) {
-  // Estados de clics
+  //*    ::::::    ESTADOS DE CLIC   ::::::
   const [clickedImage, setClickedImage] = useState(false);
   const [clickedText, setClickedText] = useState(false);
 
@@ -152,7 +153,7 @@ export default function Card({
       <div
         className={`
           flex flex-col grow rounded-2xl border-2 border-b-3 overflow-hidden 
-          cursor-pointer bg-cyan-200 border-cyan-400 w-full
+          cursor-pointer bg-white border-cyan-400 w-full
           ${isExiting ? "pointer-events-none" : ""}
         `}
       >
@@ -162,18 +163,17 @@ export default function Card({
             {spanish}
           </p>
         </div>
-
-        {/* -------- Image -------- */}
+        {/* 🔸🔸🔸🔸🔸🔸   IMAGEN    🔸🔸🔸🔸🔸🔸 */}
         <div
           onAnimationEnd={() => setAnimationImageEnd(true)}
           onClick={handleImageClick}
-          className="grow p-6 cursor-pointer"
+          className="grow cursor-pointer"
         >
           <img
             src={src}
             alt={text}
             className={`
-              w-full h-full object-contain
+              w-[70%] h-full object-contain mx-auto 
               ${
                 isImageRevealed || isExiting
                   ? "opacity-100 brightness-100 grayscale-0 contrast-100"
@@ -188,11 +188,10 @@ export default function Card({
             `}
           />
         </div>
-
         {/* -------- English text -------- */}
         <div
           onClick={handleEnglishClick}
-          className="flex flex-col h-[19%] justify-center items-center text-3xl bg-white/90 rounded-lg p-2"
+          className="flex flex-col h-[19%] justify-center items-center text-3xl bg-white/90 rounded-lg p-2 border border-gray-50"
         >
           <div className="w-full h-[70%] flex justify-center items-center font-semibold relative">
             <div
@@ -210,7 +209,6 @@ export default function Card({
                 }
               `}
             ></div>
-
             <p
               onAnimationEnd={() => setAnimationTextEnd(true)}
               className={`

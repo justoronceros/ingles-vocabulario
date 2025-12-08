@@ -8,7 +8,7 @@ export default function Home() {
           href="/lesson"
           className="w-full px-2 py-2.5 bg-green-500 text-white rounded-2xl cursor-pointer uppercase font-semibold tracking-wider flex items-center justify-center"
         >
-          Comenzar Lección
+           Vocabulario
         </Link>
       </div>
     </div>
