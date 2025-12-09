@@ -35,7 +35,7 @@ body {
 }
 
 .fade-in {
-  animation: fadeIn 0.1s ease-in both;
+  animation: fadeIn 0.2s ease-in both;
 }
 
 @keyframes slideInRight {

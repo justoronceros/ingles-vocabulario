@@ -1,4 +1,4 @@
-//* app/lesson/page.jsx
+//* APP/LESSON/PAGE.JSX
 
 "use client";
 import { MainStage } from "./components/MainStage";
